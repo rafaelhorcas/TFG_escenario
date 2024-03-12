@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vnx xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="/usr/share/xml/vnx/vnx-2.00.xsd">
+  <global>
+    <version>2.0</version>
+    <scenario_name>escenario_5g</scenario_name>
+    <automac/>
+    <vm_mgmt type="none"/>
+    <!--vm_mgmt type="private" network="10.250.0.0" mask="24" offset="200">
+       <host_mapping />
+    </vm_mgmt-->
+    <vm_defaults>
+        <console id="0" display="no"/>
+        <console id="1" display="yes"/>
+    </vm_defaults>
+    <vnx_cfg>tutorial_lxc_ubuntu.cvnx</vnx_cfg>
+  </global>
+
+  <net name="switch" mode="virtual_bridge" />
+
+  <vm name="net-mgmt" type="lxc" arch="x86_64">
+    <filesystem type="cow">/usr/share/vnx/filesystems/rootfs_lxc_ubuntu64</filesystem>
+    <if id="1" net="switch">
+      <ipv4>10.0.0.11/24</ipv4>
+    </if>
+    <route type="ipv4" gw="10.1.0.1">default</route>
+    <filetree seq='scripts' root='/usr/bin/'>/media/sf_Escenario/script_net_mgmt.py</filetree>
+    <exec seq='scripts' type='verbatim' ostype='exec'>
+      python3 /usr/bin/script_net_mgmt.py
+    </exec>
+  </vm>
+
+  <vm name="5g-core" type="lxc" arch="x86_64">
+    <filesystem type="cow">/usr/share/vnx/filesystems/rootfs_lxc_ubuntu64</filesystem>
+    <if id="1" net="switch">
+      <ipv4>10.0.0.14/24</ipv4>
+    </if>
+    <route type="ipv4" gw="10.1.0.1">default</route>
+    <filetree seq='scripts' root='/usr/bin/'>/media/sf_Escenario/script_5g_core.py</filetree>
+    <exec seq='scripts' type='verbatim' ostype='exec'>
+      python3 /usr/bin/script_5g_core.py
+    </exec>
+  </vm>
+
+  <vm name="Public-MQTT" type="lxc" arch="x86_64">
+    <filesystem type="cow">/usr/share/vnx/filesystems/rootfs_lxc_ubuntu64</filesystem>
+    <if id="1" net="switch">
+      <ipv4>10.0.0.12/24</ipv4>
+    </if>
+    <route type="ipv4" gw="10.1.0.1">default</route>
+    <filetree seq='scripts' root='/usr/bin/'>/media/sf_Escenario/script_publicMQTT.py</filetree>
+    <exec seq='scripts' type='verbatim' ostype='exec'>
+      python3 /usr/bin/script_publicMQTT.py
+    </exec>
+  </vm>
+
+  <vm name="Private-MQTT" type="lxc" arch="x86_64">
+    <filesystem type="cow">/usr/share/vnx/filesystems/rootfs_lxc_ubuntu64</filesystem>
+    <if id="1" net="switch">
+      <ipv4>10.0.0.13/24</ipv4>
+    </if>
+    <route type="ipv4" gw="10.1.0.1">default</route>
+    <filetree seq='scripts' root='/usr/bin/'>/media/sf_Escenario/script_privateMQTT.py</filetree>
+    <exec seq='scripts' type='verbatim' ostype='exec'>
+      python3 /usr/bin/script_privateMQTT.py
+    </exec>
+  </vm>
+
+</vnx>
+
+
+
