@@ -19,7 +19,7 @@
 
   <net name="switch" mode="virtual_bridge" />
 
-  <vm name="net-mgmt" type="lxc" arch="x86_64">
+  <vm name="rou-sch" type="lxc" arch="x86_64">
     <filesystem type="cow">/usr/share/vnx/filesystems/rootfs_lxc_ubuntu64</filesystem>
     <if id="1" net="switch">
       <ipv4>10.0.0.11/24</ipv4>
@@ -34,12 +34,24 @@
   <vm name="5g-core" type="lxc" arch="x86_64">
     <filesystem type="cow">/usr/share/vnx/filesystems/rootfs_lxc_ubuntu64</filesystem>
     <if id="1" net="switch">
-      <ipv4>10.0.0.14/24</ipv4>
+      <ipv4>10.0.0.15/24</ipv4>
     </if>
     <route type="ipv4" gw="10.1.0.1">default</route>
     <filetree seq='scripts' root='/usr/bin/'>/media/sf_Escenario/script_5g_core.py</filetree>
     <exec seq='scripts' type='verbatim' ostype='exec'>
       python3 /usr/bin/script_5g_core.py
+    </exec>
+  </vm>
+
+  <vm name="net-mnmt" type="lxc" arch="x86_64">
+    <filesystem type="cow">/usr/share/vnx/filesystems/rootfs_lxc_ubuntu64</filesystem>
+    <if id="1" net="switch">
+      <ipv4>10.0.0.13/24</ipv4>
+    </if>
+    <route type="ipv4" gw="10.1.0.1">default</route>
+    <filetree seq='scripts' root='/usr/bin/'>/media/sf_Escenario/script_net_mgmt.py</filetree>
+    <exec seq='scripts' type='verbatim' ostype='exec'>
+      python3 /usr/bin/script_net_mgmt.py
     </exec>
   </vm>
 
@@ -58,7 +70,7 @@
   <vm name="Private-MQTT" type="lxc" arch="x86_64">
     <filesystem type="cow">/usr/share/vnx/filesystems/rootfs_lxc_ubuntu64</filesystem>
     <if id="1" net="switch">
-      <ipv4>10.0.0.13/24</ipv4>
+      <ipv4>10.0.0.14/24</ipv4>
     </if>
     <route type="ipv4" gw="10.1.0.1">default</route>
     <filetree seq='scripts' root='/usr/bin/'>/media/sf_Escenario/script_privateMQTT.py</filetree>
