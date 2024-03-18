@@ -25,7 +25,7 @@
       <ipv4>10.0.0.11/24</ipv4>
     </if>
     <route type="ipv4" gw="10.1.0.1">default</route>
-    <filetree seq='scripts' root='/usr/bin/'>/media/sf_Escenario/script_net_mgmt.py</filetree>
+    <filetree seq='scripts' root='/usr/bin/'>/media/sf_Escenario/script_route_sch.py</filetree>
     <exec seq='scripts' type='verbatim' ostype='exec'>
       python3 /usr/bin/script_net_mgmt.py
     </exec>

@@ -1,10 +1,25 @@
 #!usr/bin/python3
-import os
+import paho.mqtt.client as mqtt
 
-#Private MQTT subscribed to 1 topic from Network Manager
-os.system("mosquitto_sub -h 10.0.0.13 -t setQoS &")
+# The callback for when a PUBLISH message is received from the server.
+def on_message(client, userdata, msg):
+    print(f"Mensaje recibido en el tema {msg.topic}: {msg.payload.decode()}")
 
-#Private MQTT publishes 3 topics
-#os.system("mosquitto_pub -t RD/veh_n/route -m 'RD/veh_n/route message'")
-#os.system("mosquitto_pub -t RD/veh_n/route_request -m 'RD/veh_n/route_request  message'")
-#os.system("mosquitto_pub -t RD/veh_n/priority -m 'RD/veh_n/priority  message'")
+# Configuración del cliente MQTT
+mqtt_client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
+# Asignar la función de manejo de mensajes al cliente
+mqtt_client.on_message = on_message
+# Conexión al broker MQTT. Especifica la dirección IP del broker MQTT y el puerto
+mqtt_client.connect("10.0.0.13", 1883)
+
+# Network manager subscribed to 1 topic from Public MQTT
+mqtt_client.subscribe("set_QoS")
+
+# Blocking call that processes network traffic, dispatches callbacks and
+# handles reconnecting.
+# Other loop*() functions are available that give a threaded interface and a
+# manual interface.
+mqtt_client.loop_forever()
+
+# Ejemplos mensajes a publicar
+# mosquitto_pub -t set_Qos 'set_QoS message'
