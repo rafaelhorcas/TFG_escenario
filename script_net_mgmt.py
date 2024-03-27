@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import paho.mqtt.client as mqtt
 import time
+import sys
 
 # Se definen las callback functions
 def on_log(client, userdata, level, buf):
@@ -34,14 +35,14 @@ client_public = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2, "client_public")
 client_private = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2, "client_private")
 
 # Configurar las funciones de callback asociadas al Public MQTT
-client_public.on_log = on_log
+#client_public.on_log = on_log
 client_public.on_connect = on_connect
 client_public.on_disconnect = on_disconnect
 client_private.on_subscribe = on_subscribe
 client_public.on_message = on_message
 
 # Configurar las funciones de callback asociadas al Private MQTT
-client_private.on_log = on_log
+#client_private.on_log = on_log
 client_private.on_connect = on_connect
 client_private.on_disconnect = on_disconnect
 client_private.on_publish = on_publish
@@ -59,7 +60,11 @@ client_private.loop_start()
 client_public.subscribe("veh_n/route")
 print("Suscrito a topic veh_n/route")
 
-client_private.publish("setQoS", "UL, BW, D, PER")
+if (len(sys.argv)==1):
+    msg_QoS = "UL,200,100,0.1"
+else:
+    msg_QoS = sys.argv[1]
+client_private.publish("setQoS",msg_QoS )
 print("Mensaje publicado en el topic setQoS")
 
 # Desconectar del broker MQTT a los 30 segundos

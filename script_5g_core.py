@@ -25,12 +25,22 @@ def on_subscribe(client, userdata, mid, reason_code_list, properties):
 
 def on_message(client, userdata, msg):
     print(f"Mensaje recibido en el tema {msg.topic}: {msg.payload.decode()}")
+    data = msg.payload.decode().split(',')
+    ifc = data[0]
+    BW = int(data[1])
+    D = int(data[2])
+    PER = float(data[3])
+    print("ifc:", ifc)
+    print("BW:", BW)
+    print("D:", D)
+    print("PER:", PER)
+
 
 # Crear un cliente MQTT
 client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
 
 # Configurar las funciones de callback
-client.on_log = on_log
+#client.on_log = on_log
 client.on_connect = on_connect
 client.on_disconnect = on_disconnect
 client.on_subscribe = on_subscribe

@@ -33,7 +33,7 @@ def on_publish(client, userdata, mid, reason_codes, properties):
 client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
 
 # Configurar las funciones de callback
-client.on_log = on_log
+#client.on_log = on_log
 client.on_connect = on_connect
 client.on_disconnect = on_disconnect
 client.on_subscribe = on_subscribe
