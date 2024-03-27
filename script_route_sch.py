@@ -1,28 +1,62 @@
 #!usr/bin/python3
 import paho.mqtt.client as mqtt
+import time
 
-# The callback for when a PUBLISH message is received from the server.
+# Se definen las callback functions
+def on_log(client, userdata, level, buf):
+    print("log: "+buf)
+
+def on_connect(client, userdata, flags, reason_code, properties):
+    if reason_code == 0:
+        print("Conexión exitosa al broker MQTT")
+    else:
+        print("No se pudo conectar al broker MQTT, código de retorno:", reason_code)
+
+def on_disconnect(client, userdata, flags, reason_code, properties):
+        print("Disconnected from broker "+ str(reason_code))
+
+def on_subscribe(client, userdata, mid, reason_code_list, properties):
+    # Since we subscribed only for a single channel, reason_code_list contains
+    # a single entry
+    if reason_code_list[0].is_failure:
+        print(f"Broker rejected you subscription: {reason_code_list[0]}")
+    else:
+        print(f"Broker granted the following QoS: {reason_code_list[0].value}")
+
 def on_message(client, userdata, msg):
     print(f"Mensaje recibido en el tema {msg.topic}: {msg.payload.decode()}")
 
-# Configuración del cliente MQTT
-mqtt_client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
-# Asignar la función de manejo de mensajes al cliente
-mqtt_client.on_message = on_message
-# Conexión al broker MQTT. Especifica la dirección IP del broker MQTT y el puerto
-mqtt_client.connect("10.0.0.12", 1883)
+def on_publish(client, userdata, mid, reason_codes, properties):
+        print("Mensaje publicado: " + str(mid))
 
-# Route Scheduler subscribed to to 3 Topics from Public MQTT
-mqtt_client.subscribe("veh_n/route_request")
-mqtt_client.subscribe("veh_n/priority")
-mqtt_client.subscribe("new_vehicle")
+# Crear un cliente MQTT
+client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
 
-# Blocking call that processes network traffic, dispatches callbacks and
-# handles reconnecting.
-# Other loop*() functions are available that give a threaded interface and a
-# manual interface.
-mqtt_client.loop_forever()
+# Configurar las funciones de callback
+client.on_log = on_log
+client.on_connect = on_connect
+client.on_disconnect = on_disconnect
+client.on_subscribe = on_subscribe
+client.on_message = on_message
+client.on_publish = on_publish
 
-# Ejemplos mensajes a publicar
-# mosquitto_pub -t veh_n/route -m 'veh_n/route message'
+# Conectar al broker MQTT
+print("Connecting to broker...")
+client.connect("10.0.0.12", 1883)
 
+# Suscribir Route Scheduler a los topics
+client.loop_start()
+client.subscribe("veh_n/route_request")
+client.subscribe("veh_n/priority")
+client.subscribe("new_vehicle")
+print("Suscrito a topics veh")
+
+# Publicar mensaje en topic /route
+client.publish("veh_n/route", "Mensaje de prueba de veh_n/route")
+print("Mensaje publicado en el topic veh_n/route")
+
+# Desconectar del broker MQTT a los 30 segundos
+time.sleep(30)
+client.disconnect()
+
+# mosquitto_pub -t veh_n/route -m 'Mensaje de prueba de veh_n/route'
