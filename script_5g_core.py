@@ -1,6 +1,7 @@
 #!usr/bin/python3
 import paho.mqtt.client as mqtt
 import time
+import os
 
 # Se definen las callback functions
 def on_log(client, userdata, level, buf):
@@ -29,12 +30,17 @@ def on_message(client, userdata, msg):
     ifc = data[0]
     BW = int(data[1])
     D = int(data[2])
-    PER = float(data[3])
+    PER = int(data[3])
     print("ifc:", ifc)
     print("BW:", BW)
     print("D:", D)
     print("PER:", PER)
-
+    # UL: interfaz del puesto de conduccion - eth3: 10.0.3.2
+    # DL: INterfaz del vehiculo - eth2: 10.0.2.2
+    if ifc == "UL":
+        os.system(f"sudo tc qdisc add dev eth3 root handle 1:0 netem rate {BW}mbit delay {D}ms loss {PER}%")
+    elif ifc == "DL":
+        os.system(f"sudo tc qdisc add dev eth2 root handle 1:0 netem rate {BW}mbit delay {D}ms loss {PER}%")
 
 # Crear un cliente MQTT
 client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
@@ -55,6 +61,6 @@ client.loop_start()
 client.subscribe("setQoS")
 print("Suscrito a topic")
 
-# Desconectar del broker MQTT a los 30 segundos
-time.sleep(30)
+# Desconectar del broker MQTT a los 300 segundos
+time.sleep(300)
 client.disconnect()

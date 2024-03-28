@@ -18,14 +18,15 @@
   </global>
 
   <net name="ctl-switch" mode="virtual_bridge" />
-  <net name="data-switch" mode="virtual_bridge" />
+  <net name="veh-switch" mode="virtual_bridge" />
+  <net name="cond-switch" mode="virtual_bridge" />
 
   <vm name="rou-sch" type="lxc" arch="x86_64">
     <filesystem type="cow">/usr/share/vnx/filesystems/rootfs_lxc_ubuntu64</filesystem>
     <if id="1" net="ctl-switch">
       <ipv4>10.0.0.11/24</ipv4>
     </if>
-    <route type="ipv4" gw="10.1.0.1">default</route>
+    <route type="ipv4" gw="10.0.0.15">default</route>
     <filetree seq='scripts' root='/usr/bin/'>/media/sf_Escenario/script_route_sch.py</filetree>
     <!--exec seq='scripts' type='verbatim' ostype='exec'>
       python3 /usr/bin/script_net_mgmt.py
@@ -37,10 +38,14 @@
     <if id="1" net="ctl-switch">
       <ipv4>10.0.0.15/24</ipv4>
     </if>
-    <if id="2" net="data-switch">
-      <ipv4>10.0.1.15/24</ipv4>
+    <if id="2" net="veh-switch">
+      <ipv4>10.0.2.1/24</ipv4>
     </if>
-    <route type="ipv4" gw="10.1.0.1">default</route>
+    <if id="3" net="cond-switch">
+      <ipv4>10.0.3.1/24</ipv4>
+    </if>
+    <route type="ipv4" gw="10.0.0.15">default</route>
+    <forwarding type="ip"></forwarding>
     <filetree seq='scripts' root='/usr/bin/'>/media/sf_Escenario/script_5g_core.py</filetree>
     <!--exec seq='scripts' type='verbatim' ostype='exec'>
       python3 /usr/bin/script_5g_core.py
@@ -52,7 +57,7 @@
     <if id="1" net="ctl-switch">
       <ipv4>10.0.0.13/24</ipv4>
     </if>
-    <route type="ipv4" gw="10.1.0.1">default</route>
+    <route type="ipv4" gw="10.0.0.15">default</route>
     <filetree seq='scripts' root='/usr/bin/'>/media/sf_Escenario/script_net_mgmt.py</filetree>
     <!--exec seq='scripts' type='verbatim' ostype='exec'>
       python3 /usr/bin/script_net_mgmt.py
@@ -64,7 +69,7 @@
     <if id="1" net="ctl-switch">
       <ipv4>10.0.0.12/24</ipv4>
     </if>
-    <route type="ipv4" gw="10.1.0.1">default</route>
+    <route type="ipv4" gw="10.0.0.15">default</route>
     <filetree seq='scripts' root='/usr/bin/'>/media/sf_Escenario/script_publicMQTT.py</filetree>
     <!--exec seq='scripts' type='verbatim' ostype='exec'>
       python3 /usr/bin/script_publicMQTT.py
@@ -76,35 +81,29 @@
     <if id="1" net="ctl-switch">
       <ipv4>10.0.0.14/24</ipv4>
     </if>
-    <route type="ipv4" gw="10.1.0.1">default</route>
+    <route type="ipv4" gw="10.0.0.15">default</route>
     <filetree seq='scripts' root='/usr/bin/'>/media/sf_Escenario/script_privateMQTT.py</filetree>
     <!--exec seq='scripts' type='verbatim' ostype='exec'>
       python3 /usr/bin/script_privateMQTT.py
     </exec-->
   </vm>
 
-    <vm name="puesto-cond" type="lxc" arch="x86_64">
+  <vm name="vehiculo" type="lxc" arch="x86_64">
     <filesystem type="cow">/usr/share/vnx/filesystems/rootfs_lxc_ubuntu64</filesystem>
-    <if id="1" net="data-switch">
-      <ipv4>10.0.1.11/24</ipv4>
+    <if id="1" net="veh-switch">
+      <ipv4>10.0.2.2/24</ipv4>
     </if>
-    <route type="ipv4" gw="10.1.0.1">default</route>
-    <!--filetree seq='scripts' root='/usr/bin/'>/media/sf_Escenario/script_privateMQTT.py</filetree>
-    <exec seq='scripts' type='verbatim' ostype='exec'>
-      python3 /usr/bin/script_privateMQTT.py
-    </exec-->
+    <route type="ipv4" gw="10.0.2.1">default</route>
+    <forwarding type="ip"></forwarding>
   </vm>
 
-    <vm name="vehiculo" type="lxc" arch="x86_64">
+  <vm name="puesto-cond" type="lxc" arch="x86_64">
     <filesystem type="cow">/usr/share/vnx/filesystems/rootfs_lxc_ubuntu64</filesystem>
-    <if id="1" net="data-switch">
-      <ipv4>10.0.1.12/24</ipv4>
+    <if id="1" net="cond-switch">
+      <ipv4>10.0.3.2/24</ipv4>
     </if>
-    <route type="ipv4" gw="10.1.0.1">default</route>
-    <!--filetree seq='scripts' root='/usr/bin/'>/media/sf_Escenario/script_privateMQTT.py</filetree>
-    <exec seq='scripts' type='verbatim' ostype='exec'>
-      python3 /usr/bin/script_privateMQTT.py
-    </exec-->
+    <route type="ipv4" gw="10.0.3.1">default</route>
+    <forwarding type="ip"></forwarding>
   </vm>
 
 </vnx>

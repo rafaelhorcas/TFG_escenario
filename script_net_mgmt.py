@@ -60,15 +60,16 @@ client_private.loop_start()
 client_public.subscribe("veh_n/route")
 print("Suscrito a topic veh_n/route")
 
+# Si no se introducen los valores como parámetros se toman los siguientes valores predeterminados
 if (len(sys.argv)==1):
-    msg_QoS = "UL,200,100,0.1"
+    msg_QoS = "UL,5,100,20"
 else:
     msg_QoS = sys.argv[1]
 client_private.publish("setQoS",msg_QoS )
 print("Mensaje publicado en el topic setQoS")
 
-# Desconectar del broker MQTT a los 30 segundos
-time.sleep(30) 
+# Desconectar del broker MQTT a los 300 segundos
+time.sleep(300) 
 
 client_public.loop_stop()
 client_private.loop_stop()
