@@ -26,6 +26,8 @@ def on_subscribe(client, userdata, mid, reason_code_list, properties):
 
 def on_message(client, userdata, msg):
     print(f"Mensaje recibido en el tema {msg.topic}: {msg.payload.decode()}")
+    if msg.topic =="veh_n/route":
+        client_private.publish("setQoS","default")
 
 def on_publish(client, userdata, mid, reason_codes, properties):
         print("Mensaje publicado: " + str(mid))
@@ -61,12 +63,14 @@ client_public.subscribe("veh_n/route")
 print("Suscrito a topic veh_n/route")
 
 # Si no se introducen los valores como parámetros se toman los siguientes valores predeterminados
-if (len(sys.argv)==1):
-    msg_QoS = "UL,5,100,20"
-else:
-    msg_QoS = sys.argv[1]
-client_private.publish("setQoS",msg_QoS )
-print("Mensaje publicado en el topic setQoS")
+if (len(sys.argv) >= 2 and sys.argv[1] == "setQos"):
+    if (len(sys.argv)==2):
+        # Evaluar añadir unidades de medida
+        msg_QoS = "UL,20mbit,30,10"
+    else:
+        msg_QoS = sys.argv[2]
+    client_private.publish("setQoS",msg_QoS )
+    print("Mensaje publicado en el topic setQoS")
 
 # Desconectar del broker MQTT a los 300 segundos
 time.sleep(300) 

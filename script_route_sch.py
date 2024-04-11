@@ -52,7 +52,7 @@ client.subscribe("new_vehicle")
 print("Suscrito a topics veh")
 
 # Publicar mensaje en topic /route
-client.publish("veh_n/route", "Mensaje de prueba de veh_n/route")
+client.publish("veh_n/route", "Actualización de ruta")
 print("Mensaje publicado en el topic veh_n/route")
 
 # Desconectar del broker MQTT a los 30 segundos

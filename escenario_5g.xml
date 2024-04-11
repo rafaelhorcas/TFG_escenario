@@ -20,6 +20,7 @@
   <net name="ctl-switch" mode="virtual_bridge" />
   <net name="veh-switch" mode="virtual_bridge" />
   <net name="cond-switch" mode="virtual_bridge" />
+  <net name="qos-switch" mode="virtual_bridge" />
 
   <vm name="rou-sch" type="lxc" arch="x86_64">
     <filesystem type="cow">/usr/share/vnx/filesystems/rootfs_lxc_ubuntu64</filesystem>
@@ -33,7 +34,7 @@
     </exec-->
   </vm>
 
-  <vm name="5g-core" type="lxc" arch="x86_64">
+  <vm name="net_emul" type="lxc" arch="x86_64">
     <filesystem type="cow">/usr/share/vnx/filesystems/rootfs_lxc_ubuntu64</filesystem>
     <if id="1" net="ctl-switch">
       <ipv4>10.0.0.15/24</ipv4>
@@ -46,7 +47,7 @@
     </if>
     <route type="ipv4" gw="10.0.0.15">default</route>
     <forwarding type="ip"></forwarding>
-    <filetree seq='scripts' root='/usr/bin/'>/media/sf_Escenario/script_5g_core.py</filetree>
+    <filetree seq='scripts' root='/usr/bin/'>/media/sf_Escenario/script_net_emul.py</filetree>
     <!--exec seq='scripts' type='verbatim' ostype='exec'>
       python3 /usr/bin/script_5g_core.py
     </exec-->
@@ -68,6 +69,9 @@
     <filesystem type="cow">/usr/share/vnx/filesystems/rootfs_lxc_ubuntu64</filesystem>
     <if id="1" net="ctl-switch">
       <ipv4>10.0.0.12/24</ipv4>
+    </if>
+    <if id="2" net="qos-switch">
+      <ipv4>10.0.2.12/24</ipv4>
     </if>
     <route type="ipv4" gw="10.0.0.15">default</route>
     <filetree seq='scripts' root='/usr/bin/'>/media/sf_Escenario/script_publicMQTT.py</filetree>
@@ -102,11 +106,11 @@
     <if id="1" net="cond-switch">
       <ipv4>10.0.3.2/24</ipv4>
     </if>
+    <if id="2" net="qos-switch">
+      <ipv4>10.0.0.16/24</ipv4>
+    </if>
     <route type="ipv4" gw="10.0.3.1">default</route>
     <forwarding type="ip"></forwarding>
   </vm>
 
 </vnx>
-
-
-

@@ -26,22 +26,31 @@ def on_subscribe(client, userdata, mid, reason_code_list, properties):
 
 def on_message(client, userdata, msg):
     print(f"Mensaje recibido en el tema {msg.topic}: {msg.payload.decode()}")
-    data = msg.payload.decode().split(',')
-    ifc = data[0]
-    BW = int(data[1])
-    D = int(data[2])
-    PER = int(data[3])
-    print("ifc:", ifc)
-    print("BW:", BW)
-    print("D:", D)
-    print("PER:", PER)
-    # UL: interfaz del puesto de conduccion - eth3: 10.0.3.2
-    # DL: INterfaz del vehiculo - eth2: 10.0.2.2
-    if ifc == "UL":
-        os.system(f"sudo tc qdisc add dev eth3 root handle 1:0 netem rate {BW}mbit delay {D}ms loss {PER}%")
-    elif ifc == "DL":
-        os.system(f"sudo tc qdisc add dev eth2 root handle 1:0 netem rate {BW}mbit delay {D}ms loss {PER}%")
+    if msg.payload.decode() == "default":
+        set_default()
+    else:
+        data = msg.payload.decode().split(',')
+        ifc = data[0]
+        BW = data[1]
+        D = int(data[2])
+        PER = int(data[3])
+        print("ifc:", ifc)
+        print("BW:", BW)
+        print("D:", D)
+        print("PER:", PER)
+        # UL: interfaz del puesto de conduccion - eth3: 10.0.3.2
+        # DL: INterfaz del vehiculo - eth2: 10.0.2.2
+        if ifc == "UL":
+            os.system(f"sudo tc qdisc replace dev eth3 root handle 1:0 netem rate {BW} delay {D}ms loss {PER}%")
+        elif ifc == "DL":
+            os.system(f"sudo tc qdisc replace dev eth2 root handle 1:0 netem rate {BW} delay {D}ms loss {PER}%")
 
+def set_default():
+    os.system("sudo tc qdisc replace dev eth2 root handle 1:0 netem rate 100mbit delay 20ms")
+    os.system("sudo tc qdisc replace dev eth3 root handle 1:0 netem rate 100mbit delay 20ms")
+
+# Se establecen los parámetros predeterminados para la red de 100mbit y 20ms
+set_default()
 # Crear un cliente MQTT
 client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
 
