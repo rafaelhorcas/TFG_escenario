@@ -14,13 +14,13 @@
         <console id="0" display="no"/>
         <console id="1" display="yes"/>
     </vm_defaults>
-    <vnx_cfg>tutorial_lxc_ubuntu.cvnx</vnx_cfg>
   </global>
 
   <net name="ctl-switch" mode="virtual_bridge" />
   <net name="veh-switch" mode="virtual_bridge" />
-  <net name="cond-switch" mode="virtual_bridge" />
+  <net name="rem-switch" mode="virtual_bridge" />
   <net name="qos-switch" mode="virtual_bridge" />
+  <net name="virbr0" mode="virtual_bridge" managed="no"/>
 
   <vm name="rou-sch" type="lxc" arch="x86_64">
     <filesystem type="cow">/usr/share/vnx/filesystems/rootfs_lxc_ubuntu64</filesystem>
@@ -42,7 +42,7 @@
     <if id="2" net="veh-switch">
       <ipv4>10.0.2.1/24</ipv4>
     </if>
-    <if id="3" net="cond-switch">
+    <if id="3" net="rem-switch">
       <ipv4>10.0.3.1/24</ipv4>
     </if>
     <route type="ipv4" gw="10.0.0.15">default</route>
@@ -71,7 +71,7 @@
       <ipv4>10.0.0.12/24</ipv4>
     </if>
     <if id="2" net="qos-switch">
-      <ipv4>10.0.2.12/24</ipv4>
+      <ipv4>10.0.3.12/24</ipv4>
     </if>
     <route type="ipv4" gw="10.0.0.15">default</route>
     <filetree seq='scripts' root='/usr/bin/'>/media/sf_Escenario/script_publicMQTT.py</filetree>
@@ -97,17 +97,23 @@
     <if id="1" net="veh-switch">
       <ipv4>10.0.2.2/24</ipv4>
     </if>
+    <if id="2" net="virbr0">
+      <ipv4>dhcp</ipv4>
+    </if>
     <route type="ipv4" gw="10.0.2.1">default</route>
     <forwarding type="ip"></forwarding>
   </vm>
 
-  <vm name="puesto-cond" type="lxc" arch="x86_64">
+  <vm name="rem-driver" type="lxc" arch="x86_64">
     <filesystem type="cow">/usr/share/vnx/filesystems/rootfs_lxc_ubuntu64</filesystem>
-    <if id="1" net="cond-switch">
+    <if id="1" net="rem-switch">
       <ipv4>10.0.3.2/24</ipv4>
     </if>
     <if id="2" net="qos-switch">
       <ipv4>10.0.0.16/24</ipv4>
+    </if>
+    <if id="3" net="virbr0">
+      <ipv4>dhcp</ipv4>
     </if>
     <route type="ipv4" gw="10.0.3.1">default</route>
     <forwarding type="ip"></forwarding>
