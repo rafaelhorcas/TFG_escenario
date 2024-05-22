@@ -19,7 +19,6 @@
   <net name="ctl-switch" mode="virtual_bridge" />
   <net name="veh-switch" mode="virtual_bridge" />
   <net name="cond-switch" mode="virtual_bridge" />
-  <net name="qos-switch" mode="virtual_bridge" />
 
   <vm name="rou-sch" type="lxc" arch="x86_64">
     <filesystem type="cow">/usr/share/vnx/filesystems/rootfs_lxc_ubuntu64</filesystem>
@@ -39,7 +38,7 @@
       <ipv4>10.0.0.15/24</ipv4>
     </if>
     <if id="2" net="veh-switch">
-      <ipv4>10.0.2.1/24</ipv4>
+      <ipv4>10.0.1.1/24</ipv4>
     </if>
     <if id="3" net="cond-switch">
       <ipv4>10.0.3.1/24</ipv4>
@@ -68,9 +67,6 @@
     <filesystem type="cow">/usr/share/vnx/filesystems/rootfs_lxc_ubuntu64</filesystem>
     <if id="1" net="ctl-switch">
       <ipv4>10.0.0.12/24</ipv4>
-    </if>
-    <if id="2" net="qos-switch">
-      <ipv4>10.0.3.12/24</ipv4>
     </if>
     <route type="ipv4" gw="10.0.0.15">default</route>
     <filetree seq='scripts' root='/usr/bin/'>/media/sf_Escenario/script_publicMQTT.py</filetree>
