@@ -1,6 +1,6 @@
 #!usr/bin/python3
 import paho.mqtt.client as mqtt
-import time
+import threading
 
 # Se definen las callback functions
 def on_log(client, userdata, level, buf):
@@ -29,34 +29,49 @@ def on_message(client, userdata, msg):
 def on_publish(client, userdata, mid, reason_codes, properties):
         print("Mensaje publicado: " + str(mid))
 
-# Crear un cliente MQTT
-client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
+# Función para enviar mensajes interactivamente
+def send_message():
+    while True:
+        message = input("¿Actualizar ruta?")
+        client.publish("veh_n/route", message)
+        print("Mensaje publicado en el topic veh_n/route")
 
-# Configurar las funciones de callback
-#client.on_log = on_log
-client.on_connect = on_connect
-client.on_disconnect = on_disconnect
-client.on_subscribe = on_subscribe
-client.on_message = on_message
-client.on_publish = on_publish
+def main():
+    global client
+    # Crear un cliente MQTT
+    client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
 
-# Conectar al broker MQTT
-print("Connecting to broker...")
-client.connect("10.0.0.12", 1883)
+    # Configurar las funciones de callback
+    #client.on_log = on_log
+    client.on_connect = on_connect
+    client.on_disconnect = on_disconnect
+    client.on_subscribe = on_subscribe
+    client.on_message = on_message
+    client.on_publish = on_publish
 
-# Suscribir Route Scheduler a los topics
-client.loop_start()
-client.subscribe("veh_n/route_request")
-client.subscribe("veh_n/priority")
-client.subscribe("new_vehicle")
-print("Suscrito a topics veh")
+    # Conectar al broker MQTT
+    print("Connecting to broker...")
+    client.connect("10.0.0.12", 1883)
 
-# Publicar mensaje en topic /route
-client.publish("veh_n/route", "Actualización de ruta")
-print("Mensaje publicado en el topic veh_n/route")
+    # Suscribir Route Scheduler a los topics
+    client.loop_start()
+    client.subscribe("veh_n/route_request")
+    client.subscribe("veh_n/priority")
+    client.subscribe("new_vehicle")
+    print("Suscrito a topics veh")
 
-# Desconectar del broker MQTT a los 30 segundos
-time.sleep(30)
-client.disconnect()
+    # Iniciar el hilo para entrada del usuario
+    thread = threading.Thread(target=send_message)
+    thread.start()
 
-# mosquitto_pub -t veh_n/route -m 'Mensaje de prueba de veh_n/route'
+    # Mantener el cliente en ejecución
+    try:
+        while True:
+            pass
+    except KeyboardInterrupt:
+        print("Desconectando del broker MQTT...")
+        client.loop_stop()
+        client.disconnect()
+
+if __name__ == "__main__":
+    main()

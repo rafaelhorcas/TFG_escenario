@@ -45,7 +45,7 @@
     </if>
     <route type="ipv4" gw="10.0.0.15">default</route>
     <forwarding type="ip"></forwarding>
-    <filetree seq='scripts' root='/usr/bin/'>/media/sf_Escenario/script_5g_core.py</filetree>
+    <filetree seq='scripts' root='/usr/bin/'>/media/sf_Escenario/script_net_emul.py</filetree>
     <!--exec seq='scripts' type='verbatim' ostype='exec'>
       python3 /usr/bin/script_5g_core.py
     </exec-->

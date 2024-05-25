@@ -49,27 +49,37 @@ def set_default():
     os.system("sudo tc qdisc replace dev eth2 root handle 1:0 netem rate 100mbit delay 20ms")
     os.system("sudo tc qdisc replace dev eth3 root handle 1:0 netem rate 100mbit delay 20ms")
 
-# Se establecen los parámetros predeterminados para la red de 100mbit y 20ms
-set_default()
-# Crear un cliente MQTT
-client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
+def main():
+    # Se establecen los parámetros predeterminados para la red de 100mbit y 20ms
+    set_default()
+    # Crear un cliente MQTT
+    client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
 
-# Configurar las funciones de callback
-#client.on_log = on_log
-client.on_connect = on_connect
-client.on_disconnect = on_disconnect
-client.on_subscribe = on_subscribe
-client.on_message = on_message
+    # Configurar las funciones de callback
+    #client.on_log = on_log
+    client.on_connect = on_connect
+    client.on_disconnect = on_disconnect
+    client.on_subscribe = on_subscribe
+    client.on_message = on_message
 
-# Conectar al broker MQTT
-print("Connecting to broker...")
-client.connect("10.0.0.14", 1883)
+    # Conectar al broker MQTT
+    print("Connecting to broker...")
+    client.connect("10.0.0.14", 1883)
 
-# Iniciar el bucle para mantener la conexión activa y manejar eventos
-client.loop_start()
-client.subscribe("setQoS")
-print("Suscrito a topic")
+    # Iniciar el bucle para mantener la conexión activa y manejar eventos
+    client.loop_start()
+    client.subscribe("setQoS")
+    print("Suscrito a topic")
 
-# Desconectar del broker MQTT a los 300 segundos
-time.sleep(300)
-client.disconnect()
+   # Mantener el cliente en ejecución
+    try:
+        while True:
+            pass
+    except KeyboardInterrupt:
+        print("Desconectando del broker MQTT...")
+        client.loop_stop()
+        client.disconnect()
+
+if __name__ == "__main__":
+    main()
+
