@@ -11,7 +11,7 @@ def on_connect(client, userdata, flags, reason_code, properties):
     if reason_code == 0:
         print("Conexión exitosa al broker MQTT")
     else:
-        print("No se pudo conectar al broker MQTT, código de retorno:", rc)
+        print("No se pudo conectar al broker MQTT, código de retorno:", reason_code)
 
 def on_disconnect(client, userdata, flags, reason_code, properties):
         print("Disconnected from broker "+ str(reason_code))
@@ -27,7 +27,8 @@ def on_subscribe(client, userdata, mid, reason_code_list, properties):
 def on_message(client, userdata, msg):
     print(f"Mensaje recibido en el tema {msg.topic}: {msg.payload.decode()}")
     if msg.topic =="veh_n/route":
-        client_private.publish("setQoS","default")
+        client_private.publish("set_QoS","default")
+        print("Mensaje default enviado en el tema set_QoS")
 
 def on_publish(client, userdata, mid, reason_codes, properties):
         print("Mensaje publicado: " + str(mid))
@@ -35,11 +36,13 @@ def on_publish(client, userdata, mid, reason_codes, properties):
 # Función para enviar mensajes interactivamente
 def send_message(client_private):
     while True:
-        message = input("Introduce el mensaje de tipo setQoS: ")
-        client_private.publish("setQoS", message)
-        print("Mensaje publicado en el topic setQoS")
+        message = input("Introduce el mensaje de tipo set_QoS: ")
+        client_private.publish("set_QoS", message)
+        print("Mensaje publicado en el topic set_QoS")
 
 def main():
+    global client_private
+    
     # Crear los clientes, uno para cada broker MQTT
     client_public = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2, "client_public")
     client_private = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2, "client_private")
@@ -69,15 +72,6 @@ def main():
     # Suscribir al topic route
     client_public.subscribe("veh_n/route")
     print("Suscrito a topic veh_n/route")
-
-    # Si no se introducen los valores como parámetros se toman los siguientes valores predeterminados
-    if (len(sys.argv) >= 2 and sys.argv[1] == "setQos"):
-        if (len(sys.argv)==2):
-            msg_QoS = "UL,20mbit,30,10"
-        else:
-            msg_QoS = sys.argv[2]
-        client_private.publish("setQoS",msg_QoS )
-        print("Mensaje publicado en el topic setQoS")
 
     # Iniciar el hilo para la entrada del usuario
     thread = threading.Thread(target=send_message, args=(client_private,))

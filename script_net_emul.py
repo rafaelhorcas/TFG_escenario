@@ -1,6 +1,5 @@
 #!usr/bin/python3
 import paho.mqtt.client as mqtt
-import time
 import os
 
 # Se definen las callback functions
@@ -33,24 +32,24 @@ def on_message(client, userdata, msg):
         ifc = data[0]
         BW = data[1]
         D = int(data[2])
-        PER = int(data[3])
+        PER = float(data[3])
         print("ifc:", ifc)
         print("BW:", BW)
         print("D:", D)
         print("PER:", PER)
         # UL: interfaz del puesto de conduccion - eth3: 10.0.3.2
-        # DL: INterfaz del vehiculo - eth2: 10.0.2.2
+        # DL: INterfaz del vehiculo - eth2: 10.0.1.2
         if ifc == "UL":
             os.system(f"sudo tc qdisc replace dev eth3 root handle 1:0 netem rate {BW} delay {D}ms loss {PER}%")
         elif ifc == "DL":
             os.system(f"sudo tc qdisc replace dev eth2 root handle 1:0 netem rate {BW} delay {D}ms loss {PER}%")
 
 def set_default():
-    os.system("sudo tc qdisc replace dev eth2 root handle 1:0 netem rate 100mbit delay 20ms")
-    os.system("sudo tc qdisc replace dev eth3 root handle 1:0 netem rate 100mbit delay 20ms")
+    os.system("sudo tc qdisc replace dev eth2 root handle 1:0 netem rate 1mbit delay 5ms loss 0.0001%")
+    os.system("sudo tc qdisc replace dev eth3 root handle 1:0 netem rate 25mbit delay 5ms loss 0.0001%")
 
 def main():
-    # Se establecen los parámetros predeterminados para la red de 100mbit y 20ms
+    # Se establecen los parámetros predeterminados en la red
     set_default()
     # Crear un cliente MQTT
     client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
@@ -68,8 +67,8 @@ def main():
 
     # Iniciar el bucle para mantener la conexión activa y manejar eventos
     client.loop_start()
-    client.subscribe("setQoS")
-    print("Suscrito a topic")
+    client.subscribe("set_QoS")
+    print("Suscrito a topic set_QoS")
 
    # Mantener el cliente en ejecución
     try:

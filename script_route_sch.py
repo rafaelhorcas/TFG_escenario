@@ -1,6 +1,5 @@
 #!usr/bin/python3
 import paho.mqtt.client as mqtt
-import threading
 
 # Se definen las callback functions
 def on_log(client, userdata, level, buf):
@@ -25,19 +24,14 @@ def on_subscribe(client, userdata, mid, reason_code_list, properties):
 
 def on_message(client, userdata, msg):
     print(f"Mensaje recibido en el tema {msg.topic}: {msg.payload.decode()}")
+    if msg.topic == "veh_n/route_request":
+        client.publish("veh_n/route","default")
+        print("Mensaje default publicado en el topic veh_n/route")
 
 def on_publish(client, userdata, mid, reason_codes, properties):
         print("Mensaje publicado: " + str(mid))
 
-# Función para enviar mensajes interactivamente
-def send_message():
-    while True:
-        message = input("¿Actualizar ruta?")
-        client.publish("veh_n/route", message)
-        print("Mensaje publicado en el topic veh_n/route")
-
 def main():
-    global client
     # Crear un cliente MQTT
     client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
 
@@ -53,16 +47,10 @@ def main():
     print("Connecting to broker...")
     client.connect("10.0.0.12", 1883)
 
-    # Suscribir Route Scheduler a los topics
+    # Suscribir Route Scheduler al topic route_request
     client.loop_start()
     client.subscribe("veh_n/route_request")
-    client.subscribe("veh_n/priority")
-    client.subscribe("new_vehicle")
-    print("Suscrito a topics veh")
-
-    # Iniciar el hilo para entrada del usuario
-    thread = threading.Thread(target=send_message)
-    thread.start()
+    print("Suscrito a topic route_request")
 
     # Mantener el cliente en ejecución
     try:
